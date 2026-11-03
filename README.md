@@ -1,6 +1,6 @@
 # MovieQuoteGPT
 
-MovieQuoteGPT is a sarcastic, movie-quoting chatbot built by fine-tuning the **TinyLlama-1.1B-Chat-v1.0** model. The project features an end-to-end pipeline, starting from AI-driven dataset preparation to fine-tuning the model using LoRA under different quantization levels (2-bit, 4-bit, and 8-bit). It also includes a detailed performance analysis and an interactive Gradio web interface.
+MovieQuoteGPT is a sarcastic, movie-quoting chatbot built by fine-tuning the **TinyLlama-1.1B-Chat-v1.0** model. The project features an end-to-end pipeline, starting from AI-driven dataset preparation to fine-tuning the model using LoRA under different quantization levels (4-bit, and 8-bit). It also includes a detailed performance analysis and an interactive Gradio web interface.
 
 ## Features
 
