@@ -127,15 +127,13 @@ def finetune_quantized_model(quantization_bits, dataset, tokenizer):
             bnb_4bit_quant_type="nf4",
             bnb_4bit_compute_dtype=torch.float16
         )
-    elif quantization_bits == 2:
-        # Note: True 2-bit quantization not directly supported by BitsAndBytes
-        # Using aggressive 4-bit as proxy (would need custom quantization for true 2-bit)
-        quantization_config = BitsAndBytesConfig(
-            load_in_4bit=True,
-            bnb_4bit_quant_type="nf4",
-            bnb_4bit_compute_dtype=torch.float16
-        )
-        print("   Note: Using 4-bit as proxy for 2-bit (true 2-bit requires custom implementation)")
+    # elif quantization_bits == 2:
+    #     quantization_config = BitsAndBytesConfig(
+    #         load_in_4bit=True,
+    #         bnb_4bit_quant_type="nf4",
+    #         bnb_4bit_compute_dtype=torch.float16
+    #     )
+    #     print("   Note: Using 4-bit as proxy for 2-bit (true 2-bit requires custom implementation)")
 
     # Load model
     model = AutoModelForCausalLM.from_pretrained(
@@ -201,13 +199,13 @@ quantization_models = {}
 training_times = {}
 model_paths = {}
 
-# Train 2-bit
-model_2bit, time_2bit, path_2bit = finetune_quantized_model(2, tokenized_dataset, tokenizer)
-quantization_models[2] = model_2bit
-training_times[2] = time_2bit
-model_paths[2] = path_2bit
-gc.collect()
-torch.cuda.empty_cache()
+# # Train 2-bit
+# model_2bit, time_2bit, path_2bit = finetune_quantized_model(2, tokenized_dataset, tokenizer)
+# quantization_models[2] = model_2bit
+# training_times[2] = time_2bit
+# model_paths[2] = path_2bit
+# gc.collect()
+# torch.cuda.empty_cache()
 
 # Train 4-bit
 model_4bit, time_4bit, path_4bit = finetune_quantized_model(4, tokenized_dataset, tokenizer)
