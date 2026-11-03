@@ -6,9 +6,9 @@ MovieQuoteGPT is a sarcastic, movie-quoting chatbot built by fine-tuning the **T
 
 - **Automated Dataset Generation:** Uses the Groq API (`llama-3.3-70b-versatile`) to automatically generate conversational questions that perfectly map to iconic movie quotes.
 - **Efficient Fine-Tuning:** Implements Parameter-Efficient Fine-Tuning (PEFT) using LoRA to train the chatbot on consumer hardware.
-- **Multi-Level Quantization:** Fine-tunes and evaluates the model across 2-bit, 4-bit, and 8-bit quantization settings using `bitsandbytes`.
+- **Multi-Level Quantization:** Fine-tunes and evaluates the model across 4-bit, and 8-bit quantization settings using `bitsandbytes`.
 - **Comprehensive Performance Analysis:** Compares model size, inference speed (tokens/sec), output quality, and training time across the different quantization levels, generating detailed visualizations (bar charts, scatter plots, radar charts).
-- **Interactive Web UI:** Features a fully functional Gradio interface allowing users to chat with the bot and dynamically switch between the 2-bit, 4-bit, and 8-bit quantized models.
+- **Interactive Web UI:** Features a fully functional Gradio interface allowing users to chat with the bot and dynamically switch between the 4-bit, and 8-bit quantized models.
 
 ## Project Structure
 
@@ -25,7 +25,6 @@ MovieQuoteGPT is a sarcastic, movie-quoting chatbot built by fine-tuning the **T
 ## Key Insights on Quantization Trade-offs
 
 Through comprehensive testing, the project reveals interesting insights into quantization:
-- **2-bit Quantization:** Highly compact and suitable for extreme memory constraints while surprisingly maintaining a high output quality score.
 - **4-bit Quantization:** Offers the fastest training time but presented the most significant degradation in output quality in this specific setup.
 - **8-bit Quantization:** Delivers the best inference speed and excellent quality, ideal for environments with fewer memory restrictions.
 
