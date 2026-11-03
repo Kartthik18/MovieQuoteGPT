@@ -127,13 +127,6 @@ def finetune_quantized_model(quantization_bits, dataset, tokenizer):
             bnb_4bit_quant_type="nf4",
             bnb_4bit_compute_dtype=torch.float16
         )
-    # elif quantization_bits == 2:
-    #     quantization_config = BitsAndBytesConfig(
-    #         load_in_4bit=True,
-    #         bnb_4bit_quant_type="nf4",
-    #         bnb_4bit_compute_dtype=torch.float16
-    #     )
-    #     print("   Note: Using 4-bit as proxy for 2-bit (true 2-bit requires custom implementation)")
 
     # Load model
     model = AutoModelForCausalLM.from_pretrained(
@@ -199,13 +192,6 @@ quantization_models = {}
 training_times = {}
 model_paths = {}
 
-# # Train 2-bit
-# model_2bit, time_2bit, path_2bit = finetune_quantized_model(2, tokenized_dataset, tokenizer)
-# quantization_models[2] = model_2bit
-# training_times[2] = time_2bit
-# model_paths[2] = path_2bit
-# gc.collect()
-# torch.cuda.empty_cache()
 
 # Train 4-bit
 model_4bit, time_4bit, path_4bit = finetune_quantized_model(4, tokenized_dataset, tokenizer)
@@ -223,7 +209,7 @@ model_paths[8] = path_8bit
 gc.collect()
 torch.cuda.empty_cache()
 
-print("\n All three quantization models trained successfully\n")
+print("\n All quantization models trained successfully\n")
 
 # SAMPLE OUTPUTS FROM ALL MODELS
 def generate_response(model, tokenizer, question, max_length=150):
@@ -256,7 +242,7 @@ test_questions = [
 
 print("\n SAMPLE OUTPUTS FROM ALL MODELS:\n")
 
-for bits in [2, 4, 8]:
+for bits in [4, 8]:
     print(f"\n{'='*80}")
     print(f"{bits}-BIT QUANTIZED MODEL RESPONSES")
     print(f"{'='*80}\n")
@@ -346,7 +332,7 @@ def measure_model_metrics(model, quantization_bits, model_path, tokenizer, num_r
 
 # Measure all models
 metrics_data = {}
-for bits in [2, 4, 8]:
+for bits in [4, 8]:
     metrics_data[bits] = measure_model_metrics(
         quantization_models[bits],
         bits,
@@ -369,7 +355,7 @@ train_times = [metrics_data[b]['training_time'] for b in bits_list]
 fig = plt.figure(figsize=(16, 12))
 gs = fig.add_gridspec(3, 3, hspace=0.6, wspace=0.4)
 
-fig.suptitle('🎬 TinyLlama Movie Bot: Quantization Level Comparison',
+fig.suptitle('TinyLlama Movie Bot: Quantization Level Comparison',
              fontsize=18, fontweight='bold', y=0.98)
 
 colors = ['#FF6B6B', '#4ECDC4', '#45B7D1']
@@ -503,7 +489,6 @@ print(f"""
    • Best Quality: {bits_list[best_quality_idx]}-bit (score: {qualities[best_quality_idx]:.2f})
 
    Trade-off Analysis:
-   • 2-bit: Most compact ({sizes[0]:.1f} MB), suitable for extreme memory constraints
    • 4-bit: Balanced performance ({speeds[1]:.2f} tok/s), good for general use
    • 8-bit: Best speed ({speeds[2]:.2f} tok/s), ideal when memory isn't limited
 
@@ -552,7 +537,7 @@ with gr.Blocks(title=" Movie Quote Chatbot", theme=gr.themes.Soft()) as demo:
     #  Sarcastic Movie Quote Chatbot
     ### Fine-tuned TinyLlama with Multi-Level Quantization
 
-    Compare 2-bit, 4-bit, and 8-bit quantized models trained on movie quotes.
+    Compare 4-bit, and 8-bit quantized models trained on movie quotes.
     Ask anything and get responses with movie references and sarcasm!
     """)
 
@@ -566,7 +551,7 @@ with gr.Blocks(title=" Movie Quote Chatbot", theme=gr.themes.Soft()) as demo:
 
         with gr.Column(scale=1):
             quantization_selector = gr.Radio(
-                choices=['2', '4', '8'],
+                choices=['4', '8'],
                 value='4',
                 label=" Quantization Level",
                 info="Select which model to use"
@@ -610,28 +595,3 @@ print("    Open the link below to interact with your fine-tuned models!\n")
 demo.launch(share=True, debug=True)
 
 print("PROJECT COMPLETED")
-print("""
-All deliverables completed:
-1) Google Colab notebook with full implementation
-2) Model loading, quantization, and fine-tuning for 2/4/8-bit
-3) Five+ sample outputs from each model
-4) Comprehensive reflection on learnings
-5) BONUS: Multiple quantization comparisons
-6) BONUS: Gradio interface for interaction
-7) BONUS: Visualizations of memory/performance trade-offs
-8) BONUS: Detailed analysis and metrics
-
-""")
-
-"""What I learned about balancing speed, size, and quality
-
-Through my implementation of this project, I learned that quantization directly influences the trade off between model quality, speed and efficiency but not necessarily in a linear way. I expected that lowering the bit quantization would make the model faster and smaller but with a worse output quality in comparision to higher bit models. However, since all three models (2-bit, 4-bit, and 8-bit) had roughly the same size due to LoRA finetuning and shared configurations, the main differences came in speed, training time and generation quality.
-
-The 2-bit model, surprisingly maintained a high quality score (0.95) while achieving a good token generation speed (14.38 tok/s), showing that aggressive quantization can still preserve quality. The 4-bit model trained the fastest (241 s) but delivered the lowest quality score (0.35). The 8-bit model had excellent quality but was the slowest in generation. Overall, I found out that deciding the right quantization level is about balancing efficiency with acceptable accuracy and not just minimizing bits or training time.
-
-What surprised me most during the process
-
-I was surprised whent he 2-bit model didn’t underperform in output quality, it matched the 8-bit model’s score (0.95), despite having expected heavy degradation.
-Also the 4-bit model performed worst overall which was unexpected, despite sitting in the middle ground where I expected a good balance.
-"""
-
